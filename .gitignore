@@ -1,0 +1,11 @@
+*~
+*.bak
+/g/metrics
+/g/log
+/g/data
+hanji.json
+/text
+/text.zip
+/.DS_Store
+/.idea
+/bin/ibmcred.py
