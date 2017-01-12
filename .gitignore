@@ -1,6 +1,8 @@
 /gremlin
 *~
 *.bak
+/examples
+/umd
 /elasticsearch-1.5.1
 /g/metrics
 /g/log

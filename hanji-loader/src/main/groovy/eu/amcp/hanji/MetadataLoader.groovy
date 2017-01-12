@@ -66,7 +66,7 @@ class MetadataLoader {
         createSingleVertexCompositeIndex(mgmt, 'parent_jurisdiction', 'byParentJurisdiction', String.class)
         createSingleVertexCompositeIndex(mgmt, 'parent_ruling', 'byParentRuling', String.class)
         createSingleVertexCompositeIndex(mgmt, 'ruling', 'byRuling', String.class)
-        createSingleVertexCompositeIndex(mgmt, 'ruling_date', 'byRulingDate', Long.class)
+        createSingleVertexCompositeIndex(mgmt, 'ruling_date', 'byRulingDate', Date.class)
 
         //full text indexes
 //        createSingleVertexFullTextIndex(mgmt, 'determining_laws', BY_DETERMINING_LAWS, String.class)

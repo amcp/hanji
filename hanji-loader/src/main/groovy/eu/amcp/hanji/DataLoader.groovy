@@ -57,7 +57,7 @@ class DataLoader {
             if (value != null) {
                 if(attribute.equals("ruling_date")) {
                     DateFormat df = new SimpleDateFormat("GGGGy年M月d日", new Locale("ja", "JP", "JP"))
-                    v.property(attribute, df.parse(value).toInstant().epochSecond)
+                    v.property(attribute, df.parse(value))
                 } else {
                     v.property(attribute, value)
                 }
