@@ -1,5 +1,1 @@
 g = graph.traversal()
-mgmt = ((com.thinkaurelius.titan.graphdb.database.StandardTitanGraph) graph).openManagement()
-summary = mgmt.makePropertyKey('opinion').dataType(String.class).make()
-mgmt.buildIndex('casesByOpinion', Vertex.class).addKey(summary, Mapping.TEXT.asParameter()).buildMixedIndex("search")
-mgmt.commit()

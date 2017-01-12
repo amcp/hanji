@@ -69,13 +69,13 @@ class MetadataLoader {
         createSingleVertexCompositeIndex(mgmt, 'ruling_date', 'byRulingDate', Long.class)
 
         //full text indexes
-        createSingleVertexFullTextIndex(mgmt, 'determining_laws', BY_DETERMINING_LAWS, String.class)
-        createSingleVertexFullTextIndex(mgmt, 'case_name', "byCaseName", String.class)
-        createSingleVertexFullTextIndex(mgmt, 'case_claim_summary', "byCaseClaimSummary", String.class)
-        createSingleVertexFullTextIndex(mgmt, 'case_claims', "byCaseClaims", String.class)
-        createSingleVertexFullTextIndex(mgmt, 'case_rights', "byCaseRights", String.class)
-        createSingleVertexFullTextIndex(mgmt, 'ruling_summary', "byRulingSummary", String.class)
-        createSingleVertexFullTextIndex(mgmt, 'ruling_text', "byRulingText", String.class)
+//        createSingleVertexFullTextIndex(mgmt, 'determining_laws', BY_DETERMINING_LAWS, String.class)
+//        createSingleVertexFullTextIndex(mgmt, 'case_name', "byCaseName", String.class)
+//        createSingleVertexFullTextIndex(mgmt, 'case_claim_summary', "byCaseClaimSummary", String.class)
+//        createSingleVertexFullTextIndex(mgmt, 'case_claims', "byCaseClaims", String.class)
+//        createSingleVertexFullTextIndex(mgmt, 'case_rights', "byCaseRights", String.class)
+//        createSingleVertexFullTextIndex(mgmt, 'ruling_summary', "byRulingSummary", String.class)
+//        createSingleVertexFullTextIndex(mgmt, 'ruling_text', "byRulingText", String.class)
 
         mgmt.commit()
     }
@@ -122,13 +122,13 @@ class MetadataLoader {
         conf.setProperty("storage.tupl.min-cache-size", "100000000") //TODO should this be a function of something?
         conf.setProperty("storage.tupl.map-data-files", "true")
         conf.setProperty("storage.tupl.direct-page-access", "false") //requires JNA which seems broken?
-        conf.setProperty("index.search.backend", "elasticsearch")
-        conf.setProperty("index.search.elasticsearch.interface", "TRANSPORT_CLIENT")
-        conf.setProperty("index.search.hostname", esServer)
-        conf.setProperty("index.search.port", esPort)
-        conf.setProperty("index.search.map-name", "true")
-        conf.setProperty("index.search.cluster-name", "elasticsearch")
-        conf.setProperty("index.search.elasticsearch.health-request-timeout", "10s")
+//        conf.setProperty("index.search.backend", "elasticsearch")
+//        conf.setProperty("index.search.elasticsearch.interface", "TRANSPORT_CLIENT")
+//        conf.setProperty("index.search.hostname", esServer)
+//        conf.setProperty("index.search.port", esPort)
+//        conf.setProperty("index.search.map-name", "true")
+//        conf.setProperty("index.search.cluster-name", "elasticsearch")
+//        conf.setProperty("index.search.elasticsearch.health-request-timeout", "10s")
         final TitanGraph g = TitanFactory.open(conf)
         return g
     }

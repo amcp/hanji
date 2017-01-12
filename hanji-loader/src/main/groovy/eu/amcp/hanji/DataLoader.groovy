@@ -29,12 +29,11 @@ class DataLoader {
             Item dict = Item.fromJSON(data.text)
             for(int i = 1; i <= dict.numberOfAttributes(); i++) {
                 dl.add(dict.getRawMap(i.toString()))
-                //if(i == 1000) {
-                    dl.graph.tx().commit()
+                dl.graph.tx().commit()
+                if(i % 1000 == 0) {
                     print "commit at " + i + "\n"
-                //}
+                }
             }
-            //dl.graph.tx().commit()
             System.exit(0)
         } catch(Exception e) {
             e.printStackTrace()
@@ -89,13 +88,13 @@ class DataLoader {
         conf.setProperty("storage.tupl.min-cache-size", "100000000") //TODO should this be a function of something?
         conf.setProperty("storage.tupl.map-data-files", "true")
         conf.setProperty("storage.tupl.direct-page-access", "false") //requires JNA which seems broken?
-        conf.setProperty("index.search.backend", "elasticsearch")
-        conf.setProperty("index.search.elasticsearch.interface", "TRANSPORT_CLIENT")
-        conf.setProperty("index.search.hostname", esServer)
-        conf.setProperty("index.search.port", esPort)
-        conf.setProperty("index.search.map-name", "true")
-        conf.setProperty("index.search.cluster-name", "elasticsearch")
-        conf.setProperty("index.search.elasticsearch.health-request-timeout", "10s")
+//        conf.setProperty("index.search.backend", "elasticsearch")
+//        conf.setProperty("index.search.elasticsearch.interface", "TRANSPORT_CLIENT")
+//        conf.setProperty("index.search.hostname", esServer)
+//        conf.setProperty("index.search.port", esPort)
+//        conf.setProperty("index.search.map-name", "true")
+//        conf.setProperty("index.search.cluster-name", "elasticsearch")
+//        conf.setProperty("index.search.elasticsearch.health-request-timeout", "10s")
         final TitanGraph g = TitanFactory.open(conf)
         return g
     }
