@@ -4,7 +4,6 @@
 from __future__ import print_function
 import fileinput
 import sys
-import time
 import re
 from collections import OrderedDict
 import urllib
@@ -75,13 +74,6 @@ def get_only_matching_div_text(tag, literal):
         div = elem.find_next_sibling("div")
         return None if div is None else div.text.strip()
     return None
-
-
-def convert_jp_date_to_utc(date_string):
-    step1 = re.sub(r'(昭和\|平成\|年\|月\|日)', '@', date_string)
-    print(step1)
-    ts = time.strptime(str, "%y/%m/%d")
-    return time.strftime(ts)
 
 
 def get_case_url(category, courts_id):
