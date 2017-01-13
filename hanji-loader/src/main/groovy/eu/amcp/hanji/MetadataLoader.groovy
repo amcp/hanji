@@ -71,13 +71,13 @@ class MetadataLoader {
                 tx.failure()
             }
             tx.close()
-        } else {
-            def titanGraph = openTitanGraph(dir, esServer, esPort, 0/*mutations*/)
+        } else if ("titan".equals(graphType)) {
+            def titanGraph = openTitanGraph(dir, 100000000/*mutations*/)
             graph = titanGraph
             def management = titanGraph.openManagement()
             management.makeVertexLabel(RULING)
             management.makeVertexLabel("opinion")
-            management.makeEdgeLabel("") //TODO
+            //management.makeEdgeLabel("") //TODO
             stringProps.each {
                 makeProperty(management, it, String.class)
             }
@@ -94,6 +94,8 @@ class MetadataLoader {
             }
 
             management.commit()
+        } else {
+            throw new IllegalArgumentException("only neo4j or titan allowed")
         }
 
     }

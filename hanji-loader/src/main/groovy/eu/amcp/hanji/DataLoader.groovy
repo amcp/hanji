@@ -55,7 +55,7 @@ class DataLoader {
         if('neo4j'.equals(graphType)) {
             graph = Neo4jGraph.open(dir.getAbsolutePath())
         } else if("titan".equals(graphType)) {
-            graph = openTitan(dir, 0/*mutations*/)
+            graph = openTitan(dir, 100000000/*mutations*/)
         } else {
             throw new IllegalArgumentException("graph type should be titan or neo4j")
         }
@@ -97,7 +97,7 @@ class DataLoader {
         final BaseConfiguration conf = new BaseConfiguration()
         conf.setProperty("storage.batch-loading", "false") //needs to be false for autoschema
         conf.setProperty("storage.transactional", "false")
-        conf.setProperty("storage.buffer-size", "1000000")
+        conf.setProperty("storage.buffer-size", mutations.toString())
         conf.setProperty("storage.setup-wait", "5000")
         conf.setProperty("ids.block-size", 1000)
         //conf.setProperty("ids.flush", "false")

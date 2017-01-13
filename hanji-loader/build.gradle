@@ -26,7 +26,7 @@ dependencies {
     compile 'com.amazonaws:aws-java-sdk-dynamodb:1.11.77'
     compile 'org.apache.tinkerpop:neo4j-gremlin:3.0.1-incubating'
     compile 'org.neo4j:neo4j-tinkerpop-api:0.1'
-    compile 'org.neo4j:neo4j-tinkerpop-api-impl:0.4-3.0.3'
+    compile 'org.neo4j:neo4j-tinkerpop-api-impl:0.1-2.2'
 }
 
 task schema(type: JavaExec) {
@@ -36,12 +36,29 @@ task schema(type: JavaExec) {
             "neo4j"]
 }
 
+task schemaTitan(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    main = "eu.amcp.hanji.MetadataLoader"
+    args = ["../g/data",
+            "titan"]
+}
+
 task loadData(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
     maxHeapSize = "10g"
     main = "eu.amcp.hanji.DataLoader"
-    args = ["./hanji.json",
+    args = ["../hanji.json",
             "../g/data",
             "../text/",
             "neo4j"]
+}
+
+task loadDataTitan(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    maxHeapSize = "10g"
+    main = "eu.amcp.hanji.DataLoader"
+    args = ["../hanji.json",
+            "../g/data",
+            "../text/",
+            "titan"]
 }

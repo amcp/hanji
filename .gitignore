@@ -17,3 +17,6 @@ hanji.json
 build
 hanji-loader/gradle
 /python/ibm.py
+/server
+/console
+/tupl
