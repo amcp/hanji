@@ -8,10 +8,14 @@ import org.apache.commons.configuration.BaseConfiguration
 import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph
 import org.apache.tinkerpop.gremlin.structure.Graph
 import org.apache.tinkerpop.gremlin.structure.Vertex
+import org.neo4j.graphdb.DynamicLabel
+import org.neo4j.graphdb.GraphDatabaseService
 import org.neo4j.graphdb.Label
 import org.neo4j.graphdb.schema.IndexDefinition
 import org.neo4j.graphdb.schema.Schema
 import org.neo4j.tinkerpop.api.impl.Neo4jGraphAPIImpl
+
+import java.lang.reflect.Field
 
 /**
  * Created by amcp on 2017/01/07.
@@ -34,7 +38,7 @@ class MetadataLoader {
     }
 
     IndexDefinition indexNeoProperty(Schema schema, String label, String property) {
-        return schema.indexFor(Label.label(label)).on(property).create()
+        return schema.indexFor(DynamicLabel.label(label)).on(property).create()
     }
 
     MetadataLoader(File dir, graphType) {
@@ -57,11 +61,15 @@ class MetadataLoader {
         if('neo4j'.equals(graphType)) {
             def neo4j = Neo4jGraph.open(dir.getAbsolutePath())
             graph = neo4j
-            def base = ((Neo4jGraphAPIImpl) neo4j.getBaseGraph()).getGraphDatabase()
-            def tx = base.beginTx()
+
+            def base = (Neo4jGraphAPIImpl) neo4j.getBaseGraph()
+            Field f = base.getClass().getDeclaredField("db"); //NoSuchFieldException
+            f.setAccessible(true);
+            GraphDatabaseService gdb = (GraphDatabaseService) f.get(base); //IllegalAccessException
+            def tx = base.tx()
             try {
-                Schema schema = base.schema()
-                schema.constraintFor(Label.label(RULING)).assertPropertyIsUnique("hanji_id_category").create()
+                def schema = gdb.schema()
+                schema.constraintFor(DynamicLabel.label(RULING)).assertPropertyIsUnique("hanji_id_category").create()
                 attrIndexMap.each { key, value ->
                     indexNeoProperty(schema, RULING, key)
                 }

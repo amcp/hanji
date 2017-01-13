@@ -1,6 +1,7 @@
 /gremlin
 *~
 *.bak
+/loader/gradle
 /examples
 /umd
 /elasticsearch-1.5.1
