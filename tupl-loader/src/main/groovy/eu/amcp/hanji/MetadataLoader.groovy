@@ -5,17 +5,8 @@ import com.thinkaurelius.titan.core.TitanFactory
 import com.thinkaurelius.titan.core.schema.TitanManagement
 import com.thinkaurelius.titan.core.TitanGraph
 import org.apache.commons.configuration.BaseConfiguration
-import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph
 import org.apache.tinkerpop.gremlin.structure.Graph
 import org.apache.tinkerpop.gremlin.structure.Vertex
-import org.neo4j.graphdb.DynamicLabel
-import org.neo4j.graphdb.GraphDatabaseService
-import org.neo4j.graphdb.Label
-import org.neo4j.graphdb.schema.IndexDefinition
-import org.neo4j.graphdb.schema.Schema
-import org.neo4j.tinkerpop.api.impl.Neo4jGraphAPIImpl
-
-import java.lang.reflect.Field
 
 /**
  * Created by amcp on 2017/01/07.
@@ -27,21 +18,16 @@ class MetadataLoader {
 
     static void main(args) {
         def storageDirectory = new File(args[0])
-        def graphType = args[1]
         try {
-            new MetadataLoader(storageDirectory, graphType)
-        } catch(Exception e) {
+            new MetadataLoader(storageDirectory)
+        } catch (Exception e) {
             e.printStackTrace()
             System.exit(1)
         }
         System.exit(0)
     }
 
-    IndexDefinition indexNeoProperty(Schema schema, String label, String property) {
-        return schema.indexFor(DynamicLabel.label(label)).on(property).create()
-    }
-
-    MetadataLoader(File dir, graphType) {
+    MetadataLoader(File dir) {
         def stringProps = ['caseUrl', 'case_number', 'case_paradigm', 'case_type', 'courthouse',
                            'courthouse_section', 'courtroom', 'detail_url',
                            'high_ruling_collection_volume_page', 'ruling_type', 's3_annotated_url',
@@ -58,51 +44,26 @@ class MetadataLoader {
                 ruling_date: ['byRulingDate', String.class]
         ]
 
-        if('neo4j'.equals(graphType)) {
-            def neo4j = Neo4jGraph.open(dir.getAbsolutePath())
-            graph = neo4j
-
-            def base = (Neo4jGraphAPIImpl) neo4j.getBaseGraph()
-            Field f = base.getClass().getDeclaredField("db"); //NoSuchFieldException
-            f.setAccessible(true);
-            GraphDatabaseService gdb = (GraphDatabaseService) f.get(base); //IllegalAccessException
-            def tx = base.tx()
-            try {
-                def schema = gdb.schema()
-                schema.constraintFor(DynamicLabel.label(RULING)).assertPropertyIsUnique("hanji_id_category").create()
-                attrIndexMap.each { key, value ->
-                    indexNeoProperty(schema, RULING, key)
-                }
-
-                tx.success()
-            } catch(Exception e) {
-                tx.failure()
-            }
-            tx.close()
-        } else if ("titan".equals(graphType)) {
-            def titanGraph = openTitanGraph(dir, 100000000/*mutations*/)
-            graph = titanGraph
-            def management = titanGraph.openManagement()
-            management.makeVertexLabel(RULING)
-            management.makeVertexLabel("opinion")
-            stringProps.each {
-                makeProperty(management, it, String.class)
-            }
-            //composite indexes - unique
-            def hanji_id_category = makeProperty(management, 'hanji_id_category', String.class)
-            if (null == management.getGraphIndex('byHanjiAndCategoryUnique')) {
-                management.buildIndex('byHanjiAndCategoryUnique', Vertex.class).addKey(hanji_id_category).unique().buildCompositeIndex()
-            }
-
-            //remaining composite indexes
-            attrIndexMap.each { key, value ->
-                createSingleVertexCompositeIndex(management, key, value[0], value[1])
-            }
-
-            management.commit()
-        } else {
-            throw new IllegalArgumentException("only neo4j or titan allowed")
+        def titanGraph = openTitanGraph(dir, 100000000/*mutations*/)
+        graph = titanGraph
+        def management = titanGraph.openManagement()
+        management.makeVertexLabel(RULING)
+        management.makeVertexLabel("opinion")
+        stringProps.each {
+            makeProperty(management, it, String.class)
         }
+        //composite indexes - unique
+        def hanji_id_category = makeProperty(management, 'hanji_id_category', String.class)
+        if (null == management.getGraphIndex('byHanjiAndCategoryUnique')) {
+            management.buildIndex('byHanjiAndCategoryUnique', Vertex.class).addKey(hanji_id_category).unique().buildCompositeIndex()
+        }
+
+        //remaining composite indexes
+        attrIndexMap.each { key, value ->
+            createSingleVertexCompositeIndex(management, key, value[0], value[1])
+        }
+
+        management.commit()
 
     }
 

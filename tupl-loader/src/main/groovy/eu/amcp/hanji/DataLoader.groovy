@@ -5,7 +5,6 @@ import com.google.common.base.Stopwatch
 import com.thinkaurelius.titan.core.TitanFactory
 import com.thinkaurelius.titan.core.TitanGraph
 import org.apache.commons.configuration.BaseConfiguration
-import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph
 import org.apache.tinkerpop.gremlin.structure.Graph
 import org.apache.tinkerpop.gremlin.structure.Vertex
 
@@ -29,10 +28,9 @@ class DataLoader {
         File data = new File(args[0])
         File storageDirectory = new File(args[1])
         File rulingTextDir = new File(args[2])
-        String graphType = args[3]
         DataLoader dl = null
         try {
-            dl = new DataLoader(storageDirectory, rulingTextDir, graphType)
+            dl = new DataLoader(storageDirectory, rulingTextDir)
             Item dict = Item.fromJSON(data.text)
             print "read data from disk\n"
             List<Map<String, Object>> rawItems = new ArrayList<>(dict.numberOfAttributes())
@@ -50,7 +48,7 @@ class DataLoader {
             }
             dl.graph.tx().commit()
             timer.stop()
-            print "committing " + i + " cases on " + graphType + " took " + timer.elapsed(TimeUnit.MILLISECONDS) + "ms"
+            print "committing " + i + " cases on titan-tupl took " + timer.elapsed(TimeUnit.MILLISECONDS) + "ms"
         } catch(Exception e) {
             e.printStackTrace()
             System.exit(1)
@@ -60,15 +58,9 @@ class DataLoader {
         System.exit(0)
     }
 
-    DataLoader(File dir, File rulingTextDir, String graphType) {
+    DataLoader(File dir, File rulingTextDir) {
         this.rulingTextDir = rulingTextDir
-        if('neo4j'.equals(graphType)) {
-            graph = Neo4jGraph.open(dir.getAbsolutePath())
-        } else if("titan".equals(graphType)) {
-            graph = openTitan(dir, 100000000/*mutations*/)
-        } else {
-            throw new IllegalArgumentException("graph type should be titan or neo4j")
-        }
+        graph = openTitan(dir, 100000000/*mutations*/)
     }
 
     static Vertex createVertexWithCompositeProperty(Graph g, String hanji, String category) {

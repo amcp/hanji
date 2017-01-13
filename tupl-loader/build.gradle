@@ -1,0 +1,41 @@
+group 'eu.amcp'
+version '1.0.0'
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    compile 'org.apache.tinkerpop:gremlin-groovy:3.0.1-incubating'
+    compile 'jp.classmethod:tupl-titan100-storage-backend:1.0.1'
+    compile 'com.github.cojen:tupl:v1.3.0'
+    compile 'com.amazonaws:aws-java-sdk-dynamodb:1.11.77'
+}
+
+task schema(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    main = "eu.amcp.hanji.MetadataLoader"
+    args = ["../g/data"]
+}
+
+task loadData(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    maxHeapSize = "10g"
+    main = "eu.amcp.hanji.DataLoader"
+    args = ["../hanji.json",
+            "../g/data",
+            "../text/"]
+}

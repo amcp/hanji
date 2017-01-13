@@ -1,6 +1,8 @@
 /gremlin
 *~
 *.bak
+/tupl-loader/gradle
+/neo4j-loader/gradle
 /loader/gradle
 /examples
 /umd

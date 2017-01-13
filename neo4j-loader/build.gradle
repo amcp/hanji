@@ -20,26 +20,16 @@ allprojects {
 dependencies {
     compile 'org.codehaus.groovy:groovy-all:2.3.11'
     compile 'org.apache.tinkerpop:gremlin-groovy:3.0.1-incubating'
-    compile 'jp.classmethod:tupl-titan100-storage-backend:1.0.1'
-    compile 'com.github.cojen:tupl:v1.3.0'
     compile 'com.amazonaws:aws-java-sdk-dynamodb:1.11.77'
     compile 'org.apache.tinkerpop:neo4j-gremlin:3.0.1-incubating'
-    compile 'org.neo4j:neo4j-tinkerpop-api:0.1'
     compile 'org.neo4j:neo4j-tinkerpop-api-impl:0.1-2.2'
+    compile 'com.google.guava:guava:19.0'
 }
 
 task schema(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
     main = "eu.amcp.hanji.MetadataLoader"
-    args = ["../g/data",
-            "neo4j"]
-}
-
-task schemaTitan(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    main = "eu.amcp.hanji.MetadataLoader"
-    args = ["../g/data",
-            "titan"]
+    args = ["../g/data"]
 }
 
 task loadData(type: JavaExec) {
@@ -48,16 +38,5 @@ task loadData(type: JavaExec) {
     main = "eu.amcp.hanji.DataLoader"
     args = ["../hanji.json",
             "../g/data",
-            "../text/",
-            "neo4j"]
-}
-
-task loadDataTitan(type: JavaExec) {
-    classpath sourceSets.main.runtimeClasspath
-    maxHeapSize = "10g"
-    main = "eu.amcp.hanji.DataLoader"
-    args = ["../hanji.json",
-            "../g/data",
-            "../text/",
-            "titan"]
+            "../text/"]
 }
