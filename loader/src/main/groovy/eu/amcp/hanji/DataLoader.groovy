@@ -20,6 +20,10 @@ class DataLoader {
 
     Graph graph
     File rulingTextDir
+    Locale jp = new Locale("ja", "JP", "JP")
+    Locale us = new Locale("us", "US")
+    DateFormat jpFormat = new SimpleDateFormat("GGGGy年M月d日", jp)
+    DateFormat usFormat = new SimpleDateFormat("YYYY-MM-dd'T'HH:mm:ss.SSSZ", us)
 
     static void main(String[] args) {
         File data = new File(args[0])
@@ -31,23 +35,29 @@ class DataLoader {
             dl = new DataLoader(storageDirectory, rulingTextDir, graphType)
             Item dict = Item.fromJSON(data.text)
             print "read data from disk\n"
+            List<Map<String, Object>> rawItems = new ArrayList<>(dict.numberOfAttributes())
+            int i
+            for(i = 1; i <= dict.numberOfAttributes(); i++) {
+                rawItems.add(dict.getRawMap(i.toString()))
+            }
             Stopwatch timer = Stopwatch.createStarted()
-            for(int i = 1; i <= dict.numberOfAttributes(); i++) {
-                dl.add(dict.getRawMap(i.toString()))
-                dl.graph.tx().commit()
+
+            for(i = 0; i < rawItems.size(); i++) {
+                dl.add(rawItems.get(i))
                 if(i % 10000 == 0) {
-                    print "commit at " + i + "\n"
+                    print "at " + i + "\n"
                 }
             }
+            dl.graph.tx().commit()
             timer.stop()
-            print graphType + " took " + timer.elapsed(TimeUnit.MILLISECONDS) + "ms"
-            System.exit(0)
+            print "committing " + i + " cases on " + graphType + " took " + timer.elapsed(TimeUnit.MILLISECONDS) + "ms"
         } catch(Exception e) {
             e.printStackTrace()
             System.exit(1)
         } finally {
             dl.graph.close()
         }
+        System.exit(0)
     }
 
     DataLoader(File dir, File rulingTextDir, String graphType) {
@@ -77,10 +87,7 @@ class DataLoader {
             def value = item.get(attribute)
             if (value != null) {
                 if(attribute.equals("ruling_date")) {
-                    def locale = new Locale("ja", "JP", "JP")
-                    DateFormat df = new SimpleDateFormat("GGGGy年M月d日", locale)
-                    DateFormat target = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", locale)
-                    v.property(attribute, target.format(df.parse(value)))
+                    v.property(attribute, usFormat.format(jpFormat.parse(value)))
                 } else {
                     v.property(attribute, value)
                 }
@@ -108,7 +115,7 @@ class DataLoader {
         conf.setProperty("storage.directory", storageDirectory.getAbsolutePath())
         conf.setProperty("schema.default", "default")
         conf.setProperty("storage.tupl.prefix", "hanji")
-        conf.setProperty("storage.tupl.min-cache-size", "100000000") //TODO should this be a function of something?
+        conf.setProperty("storage.tupl.min-cache-size", "3000000000") //TODO should this be a function of something?
         conf.setProperty("storage.tupl.map-data-files", "true")
         conf.setProperty("storage.tupl.direct-page-access", "false") //requires JNA which seems broken?
         final TitanGraph g = TitanFactory.open(conf)

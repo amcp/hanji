@@ -85,18 +85,16 @@ class MetadataLoader {
             def management = titanGraph.openManagement()
             management.makeVertexLabel(RULING)
             management.makeVertexLabel("opinion")
-            //management.makeEdgeLabel("") //TODO
             stringProps.each {
                 makeProperty(management, it, String.class)
             }
             //composite indexes - unique
-            def hanji_id = makeProperty(management, 'hanji_id', String.class)
-            def category = makeProperty(management, 'category', String.class)
+            def hanji_id_category = makeProperty(management, 'hanji_id_category', String.class)
             if (null == management.getGraphIndex('byHanjiAndCategoryUnique')) {
-                management.buildIndex('byHanjiAndCategoryUnique', Vertex.class).addKey(hanji_id).addKey(category).unique().buildCompositeIndex()
+                management.buildIndex('byHanjiAndCategoryUnique', Vertex.class).addKey(hanji_id_category).unique().buildCompositeIndex()
             }
 
-            //composite indexes
+            //remaining composite indexes
             attrIndexMap.each { key, value ->
                 createSingleVertexCompositeIndex(management, key, value[0], value[1])
             }
