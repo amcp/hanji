@@ -32,17 +32,16 @@ dependencies {
 task schema(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
     main = "eu.amcp.hanji.MetadataLoader"
-    args = ["/Users/amcp/hanji/g/data", "0.0.0.0", "9300", "neo4j"]
+    args = ["../g/data",
+            "neo4j"]
 }
 
 task loadData(type: JavaExec) {
     classpath sourceSets.main.runtimeClasspath
     maxHeapSize = "10g"
     main = "eu.amcp.hanji.DataLoader"
-    args = ["/Users/amcp/hanji/hanji-loader/hanji.json",
-            "/Users/amcp/hanji/g/data",
-            "0.0.0.0",
-            "9300",
-            "/Users/amcp/hanji/text/",
+    args = ["./hanji.json",
+            "../g/data",
+            "../text/",
             "neo4j"]
 }

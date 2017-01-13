@@ -4,7 +4,6 @@ import com.amazonaws.services.dynamodbv2.document.Item
 import com.google.common.base.Stopwatch
 import com.thinkaurelius.titan.core.TitanFactory
 import com.thinkaurelius.titan.core.TitanGraph
-import javafx.scene.paint.Stop
 import org.apache.commons.configuration.BaseConfiguration
 import org.apache.tinkerpop.gremlin.neo4j.structure.Neo4jGraph
 import org.apache.tinkerpop.gremlin.structure.Graph
@@ -25,13 +24,11 @@ class DataLoader {
     static void main(String[] args) {
         File data = new File(args[0])
         File storageDirectory = new File(args[1])
-        String esServer = args[2]
-        String esPort = args[3]
-        File rulingTextDir = new File(args[4])
-        String graphType = args[5]
+        File rulingTextDir = new File(args[2])
+        String graphType = args[3]
         DataLoader dl = null
         try {
-            dl = new DataLoader(storageDirectory, esServer, esPort, rulingTextDir, graphType)
+            dl = new DataLoader(storageDirectory, rulingTextDir, graphType)
             Item dict = Item.fromJSON(data.text)
             print "read data from disk\n"
             Stopwatch timer = Stopwatch.createStarted()
@@ -53,12 +50,12 @@ class DataLoader {
         }
     }
 
-    DataLoader(File dir, String esServer, String esPort, File rulingTextDir, String graphType) {
+    DataLoader(File dir, File rulingTextDir, String graphType) {
         this.rulingTextDir = rulingTextDir
         if('neo4j'.equals(graphType)) {
             graph = Neo4jGraph.open(dir.getAbsolutePath())
         } else if("titan".equals(graphType)) {
-            graph = openTitan(dir, esServer, esPort, 0/*mutations*/)
+            graph = openTitan(dir, 0/*mutations*/)
         } else {
             throw new IllegalArgumentException("graph type should be titan or neo4j")
         }
@@ -96,7 +93,7 @@ class DataLoader {
         }
     }
 
-    static TitanGraph openTitan(File storageDirectory, String esServer, String esPort, int mutations) {
+    static TitanGraph openTitan(File storageDirectory, int mutations) {
         final BaseConfiguration conf = new BaseConfiguration()
         conf.setProperty("storage.batch-loading", "false") //needs to be false for autoschema
         conf.setProperty("storage.transactional", "false")

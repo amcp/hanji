@@ -18,18 +18,14 @@ import org.neo4j.tinkerpop.api.impl.Neo4jGraphAPIImpl
  */
 class MetadataLoader {
 
-    public static final String SEARCH = "search"
-    public static final String BY_DETERMINING_LAWS = 'byDeterminingLaws'
     public static final String RULING = "ruling"
     Graph graph
 
     static void main(args) {
         def storageDirectory = new File(args[0])
-        def esServer = args[1]
-        def esPort = args[2]
-        def graphType = args[3]
+        def graphType = args[1]
         try {
-            new MetadataLoader(storageDirectory, esServer, esPort, graphType)
+            new MetadataLoader(storageDirectory, graphType)
         } catch(Exception e) {
             e.printStackTrace()
             System.exit(1)
@@ -41,7 +37,7 @@ class MetadataLoader {
         return schema.indexFor(Label.label(label)).on(property).create()
     }
 
-    MetadataLoader(File dir, String esServer, esPort, graphType) {
+    MetadataLoader(File dir, graphType) {
         def stringProps = ['caseUrl', 'case_number', 'case_paradigm', 'case_type', 'courthouse',
                            'courthouse_section', 'courtroom', 'detail_url',
                            'high_ruling_collection_volume_page', 'ruling_type', 's3_annotated_url',
