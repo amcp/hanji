@@ -38,10 +38,10 @@ class DataLoader {
             }
             Stopwatch timer = Stopwatch.createStarted()
 
-            for(i = 0; i < rawItems.size(); i++) {
+            for(i = 1; i <= rawItems.size(); i++) {
                 dl.add(rawItems.get(i))
                 if(i % 10000 == 0) {
-                    print "at " + i + ", elapsed " + timer.elapsed(TimeUnit.MILLISECONDS) + " ms\n"
+                    print "at " + i + "\n"
                 }
             }
             dl.graph.tx().commit()
@@ -70,8 +70,8 @@ class DataLoader {
     void add(Map<String, Object> item) {
         String hanji = item.get('hanji_id')
         String category = item.get('category')
-        Vertex v = graph.traversal().V().has('ruling', 'hanji_id', hanji)
-                .has('category', category).tryNext().orElse(createVertexWithCompositeProperty(graph, hanji, category))
+        Vertex v = graph.traversal().V().has('ruling', 'hanji_id_category', hanji + '/' + category)
+                .tryNext().orElse(createVertexWithCompositeProperty(graph, hanji, category))
 
         for (String attribute : item.keySet()) {
             def value = item.get(attribute)

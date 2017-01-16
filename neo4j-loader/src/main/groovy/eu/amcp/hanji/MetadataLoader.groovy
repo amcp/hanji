@@ -47,7 +47,8 @@ class MetadataLoader {
                 parent_jurisdiction: ['byParentJurisdiction', String.class],
                 parent_ruling: ['byParentRuling', String.class],
                 ruling: ['byRuling', String.class],
-                ruling_date: ['byRulingDate', String.class]
+                ruling_date: ['byRulingDate', String.class],
+                hanji_id_category: ['byHanjiCategory', String.class]
         ]
 
         def neo4j = Neo4jGraph.open(dir.getAbsolutePath())
@@ -66,6 +67,7 @@ class MetadataLoader {
 
             tx.commit()
         } catch(Exception e) {
+            System.err.println("error committing schema " + e.getMessage())
             tx.rollback()
         }
     }
