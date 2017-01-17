@@ -38,13 +38,16 @@ class DataLoader {
             for(i = 1; i <= dict.numberOfAttributes(); i++) {
                 rawItems.add(dict.getRawMap(i.toString()))
             }
+            print "created maps\n"
             Stopwatch timer = Stopwatch.createStarted()
 
-            for(i = 0; i < rawItems.size(); i++) {
-                dl.add(rawItems.get(i))
+            i = 0
+            for(Map<String, Object> raw : rawItems) {
+                dl.add(raw)
                 if(i % 10000 == 0) {
                     print "at " + i + "\n"
                 }
+                i++
             }
             dl.graph.tx().commit()
             timer.stop()
@@ -72,8 +75,7 @@ class DataLoader {
     void add(Map<String, Object> item) {
         String hanji = item.get('hanji_id')
         String category = item.get('category')
-        Vertex v = graph.traversal().V().has('ruling', 'hanji_id', hanji)
-                .has('category', category).tryNext().orElse(createVertexWithCompositeProperty(graph, hanji, category))
+        Vertex v = createVertexWithCompositeProperty(graph, hanji, category)
 
         for (String attribute : item.keySet()) {
             def value = item.get(attribute)
