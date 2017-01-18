@@ -1,13 +1,12 @@
 package eu.amcp.hanji;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tinkerpop.gremlin.process.traversal.P;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiPredicate;
@@ -28,7 +27,7 @@ public enum Text implements BiPredicate {
 
         @Override
         public boolean evaluateRaw(String value, String terms) {
-            Set<String> tokens = Sets.newHashSet(tokenize(value.toLowerCase()));
+            Set<String> tokens = new HashSet<>(tokenize(value.toLowerCase()));
             terms = terms.trim();
             List<String> tokenTerms = tokenize(terms.toLowerCase());
             if (!terms.isEmpty() && tokenTerms.isEmpty()) return false;
@@ -147,7 +146,9 @@ public enum Text implements BiPredicate {
     private static final Logger log = LoggerFactory.getLogger(Text.class);
 
     public void preevaluate(Object value, Object condition) {
-        Preconditions.checkArgument(this.isValidCondition(condition), "Invalid condition provided: %s", condition);
+        if (false == this.isValidCondition(condition)) {
+            throw new IllegalArgumentException("Invalid condition provided: " + condition);
+        }
         if (!(value instanceof String)) log.debug("Value not a string: " + value);
     }
 
