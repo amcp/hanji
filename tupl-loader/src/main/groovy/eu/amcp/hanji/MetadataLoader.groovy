@@ -1,12 +1,12 @@
 package eu.amcp.hanji
 
-import com.thinkaurelius.titan.core.PropertyKey
-import com.thinkaurelius.titan.core.TitanFactory
-import com.thinkaurelius.titan.core.schema.TitanManagement
-import com.thinkaurelius.titan.core.TitanGraph
 import org.apache.commons.configuration.BaseConfiguration
 import org.apache.tinkerpop.gremlin.structure.Graph
 import org.apache.tinkerpop.gremlin.structure.Vertex
+import org.janusgraph.core.JanusGraph
+import org.janusgraph.core.JanusGraphFactory
+import org.janusgraph.core.PropertyKey
+import org.janusgraph.core.schema.JanusGraphManagement
 
 /**
  * Created by amcp on 2017/01/07.
@@ -67,11 +67,11 @@ class MetadataLoader {
 
     }
 
-    private PropertyKey makeProperty(TitanManagement mgmt, String name, Class<?> clazz) {
+    private PropertyKey makeProperty(JanusGraphManagement mgmt, String name, Class<?> clazz) {
          return mgmt.makePropertyKey(name).dataType(clazz).make()
     }
 
-    private void createSingleVertexCompositeIndex(TitanManagement mgmt, String keyName, String indexName, Class<?> clazz) {
+    private void createSingleVertexCompositeIndex(JanusGraphManagement mgmt, String keyName, String indexName, Class<?> clazz) {
         def property
         if(false == mgmt.containsPropertyKey(keyName)) {
             property = mgmt.makePropertyKey(keyName).dataType(clazz).make()
@@ -85,7 +85,7 @@ class MetadataLoader {
 
 
 
-    static TitanGraph openTitanGraph(File storageDirectory, int mutations) {
+    static JanusGraph openTitanGraph(File storageDirectory, int mutations) {
         final BaseConfiguration conf = new BaseConfiguration()
         conf.setProperty("storage.batch-loading", "false") //needs to be false for autoschema
         conf.setProperty("storage.transactional", "false")
@@ -96,14 +96,14 @@ class MetadataLoader {
 
         //storage backend specific
         //TODO externalize this to a properties file
-        conf.setProperty("storage.backend", "jp.classmethod.titan.diskstorage.tupl.TuplStoreManager")
+        conf.setProperty("storage.backend", "berkeleyje")
         conf.setProperty("storage.directory", storageDirectory.getAbsolutePath())
         conf.setProperty("schema.default", "default")
-        conf.setProperty("storage.tupl.prefix", "hanji")
-        conf.setProperty("storage.tupl.min-cache-size", "100000000") //TODO should this be a function of something?
-        conf.setProperty("storage.tupl.map-data-files", "true")
-        conf.setProperty("storage.tupl.direct-page-access", "false") //requires JNA which seems broken?
-        final TitanGraph g = TitanFactory.open(conf)
+//        conf.setProperty("storage.tupl.prefix", "hanji")
+//        conf.setProperty("storage.tupl.min-cache-size", "100000000") //TODO should this be a function of something?
+//        conf.setProperty("storage.tupl.map-data-files", "true")
+//        conf.setProperty("storage.tupl.direct-page-access", "false") //requires JNA which seems broken?
+        final JanusGraph g = JanusGraphFactory.open(conf)
         return g
     }
 }

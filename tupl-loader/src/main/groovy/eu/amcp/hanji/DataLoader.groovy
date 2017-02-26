@@ -2,11 +2,11 @@ package eu.amcp.hanji
 
 import com.amazonaws.services.dynamodbv2.document.Item
 import com.google.common.base.Stopwatch
-import com.thinkaurelius.titan.core.TitanFactory
-import com.thinkaurelius.titan.core.TitanGraph
 import org.apache.commons.configuration.BaseConfiguration
 import org.apache.tinkerpop.gremlin.structure.Graph
 import org.apache.tinkerpop.gremlin.structure.Vertex
+import org.janusgraph.core.JanusGraph
+import org.janusgraph.core.JanusGraphFactory
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
@@ -51,7 +51,7 @@ class DataLoader {
             }
             dl.graph.tx().commit()
             timer.stop()
-            print "committing " + i + " cases on titan-tupl took " + timer.elapsed(TimeUnit.MILLISECONDS) + "ms"
+            print "committing " + i + " cases on janusgraph-berkeleyje took " + timer.elapsed(TimeUnit.MILLISECONDS) + "ms"
         } catch(Exception e) {
             e.printStackTrace()
             System.exit(1)
@@ -94,7 +94,7 @@ class DataLoader {
         }
     }
 
-    static TitanGraph openTitan(File storageDirectory, int mutations) {
+    static JanusGraph openTitan(File storageDirectory, int mutations) {
         final BaseConfiguration conf = new BaseConfiguration()
         conf.setProperty("storage.batch-loading", "false") //needs to be false for autoschema
         conf.setProperty("storage.transactional", "false")
@@ -105,14 +105,14 @@ class DataLoader {
 
         //storage backend specific
         //TODO externalize this to a properties file
-        conf.setProperty("storage.backend", "jp.classmethod.titan.diskstorage.tupl.TuplStoreManager")
+        conf.setProperty("storage.backend", "berkeleyje")
         conf.setProperty("storage.directory", storageDirectory.getAbsolutePath())
         conf.setProperty("schema.default", "default")
-        conf.setProperty("storage.tupl.prefix", "hanji")
-        conf.setProperty("storage.tupl.min-cache-size", "3000000000") //TODO should this be a function of something?
-        conf.setProperty("storage.tupl.map-data-files", "true")
-        conf.setProperty("storage.tupl.direct-page-access", "false") //requires JNA which seems broken?
-        final TitanGraph g = TitanFactory.open(conf)
+//        conf.setProperty("storage.tupl.prefix", "hanji")
+//        conf.setProperty("storage.tupl.min-cache-size", "3000000000") //TODO should this be a function of something?
+//        conf.setProperty("storage.tupl.map-data-files", "true")
+//        conf.setProperty("storage.tupl.direct-page-access", "false") //requires JNA which seems broken?
+        final JanusGraph g = JanusGraphFactory.open(conf)
         return g
     }
 }
